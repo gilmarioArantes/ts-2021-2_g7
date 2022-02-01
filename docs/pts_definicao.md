@@ -15,3 +15,6 @@ Repositório: https://github.com/crobertsbmw/deckofcards
 |3|Reembaralhe as cartas|As cartas de um baralho são reaproveitadas e embaralhadas.|
 |4|Um Deck Parcial|Criação de um baralho parcial com cartas específicas.|
 |5|Devolvendo as cartas ao baralho|Realiza a devolução de cartas que foram compradas ou de uma pilha de volta ao baralho.|
+
+**3. Tecnologia que será empregada na elaboração do projeto de teste.**
+Insomnia, disponível em: https://insomnia.rest/download
