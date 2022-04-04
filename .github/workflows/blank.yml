@@ -11,5 +11,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Run the API
+      if: github.ref == 'refs/heads/develop'
       run: |
         newman run "projeto_teste/Deck of Cards - API Tests.postman_collection.json"
