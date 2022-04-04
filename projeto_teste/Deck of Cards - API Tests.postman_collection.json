@@ -356,6 +356,290 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Shuffle the Cards",
+			"item": [
+				{
+					"name": "SC - Criar e Embalhar Deck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Feito por Ariel Marte",
+									"",
+									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Sucesso\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.equal(true);",
+									"})",
+									"",
+									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Embaralhamento\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.shuffled).to.equal(true);",
+									"})",
+									"",
+									"pm.test(\"Criar um Deck e Embaralhar - Total de Cartas\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.remaining).to.equal(pm.collectionVariables.get(\"deckCount\")*52);",
+									"",
+									"})",
+									"",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/?deck_count={{deckCount}}",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "deck_count",
+									"value": "{{deckCount}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SC - Deck Maior 20 baralhos",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Feito por Ariel Marte",
+									"",
+									"pm.test(\"Criar um Deck maior que 20\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.equal(false);",
+									"})",
+									"",
+									"pm.test(\"Mensagem de Erro\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.error).to.equal(\"The max number of Decks is 20.\");",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/?deck_count=21",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "deck_count",
+									"value": "21"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SC - Deck Zerado",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Feito por Ariel Marte",
+									"",
+									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Sucesso\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.equal(true);",
+									"})",
+									"",
+									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Embaralhamento\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.shuffled).to.equal(true);",
+									"})",
+									"",
+									"",
+									"pm.test(\"Criar um Deck Zero\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.remaining).to.equal(0);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/?deck_count=0",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "deck_count",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Reshuffle the Cards",
+			"item": [
+				{
+					"name": "RC - Reembaralhar Todas as cartas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Feito por Ariel Marte",
+									"",
+									"pm.test(\"Reembaralhar - Confirmação de Sucesso\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.equal(true);",
+									"})",
+									"",
+									"pm.test(\"Reembaralhar - Confirmação de Reembaralhar\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.shuffled).to.equal(true);",
+									"})",
+									"",
+									"",
+									"pm.test(\"Totas as Cartas de Volta ao Deck\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.remaining).to.equal(52);",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{deck_id}}/shuffle/",
+							"host": [
+								"{{baseURL}}{{deck_id}}"
+							],
+							"path": [
+								"shuffle",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RC - Reembaralhar Restantes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"//Feito por Ariel Marte",
+									"",
+									"pm.test(\"Reembaralhar Restantes - Confirmação de Sucesso\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.success).to.equal(true);",
+									"})",
+									"",
+									"pm.test(\"Reembaralhar Restantes - Confirmação de Reembaralhar\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.shuffled).to.equal(true);",
+									"})",
+									"",
+									"",
+									"pm.test(\"Reembaralhar Cartas Restantes no Deck - Necessário RC Transição\", function(){",
+									"    let jsonData = pm.response.json();",
+									"    pm.expect(jsonData.remaining).to.equal(pm.collectionVariables.get(\"remaining\"));",
+									"",
+									"})",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"//Feito por Ariel Marte",
+									"",
+									"pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/return`, function (err, response) {",
+									"    let jsonData = response.json();",
+									"    pm.collectionVariables.set(\"remaining\", jsonData.remaining);",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{deck_id}}/shuffle/?remaining=true",
+							"host": [
+								"{{baseURL}}{{deck_id}}"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "remaining",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
