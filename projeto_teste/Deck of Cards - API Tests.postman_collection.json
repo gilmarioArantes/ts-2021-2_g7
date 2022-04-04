@@ -6,6 +6,228 @@
 	},
 	"item": [
 		{
+			"name": "Draw a Card",
+			"item": [
+				{
+					"name": "DC - Tirar cartas",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Michelly Lima\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Carta retirada com sucesso\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.success).to.equal(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"O ID do Deck de onde as cartas foram retiradas está correto\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.deck_id).to.equal(pm.collectionVariables.get(\"deck_id\"));\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Contagem correta de cartas\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    let cartas = jsonData.cards;\r",
+									"    pm.expect(cartas.length).to.equal(2);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Itens do Array de cartas estão presentes\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    jsonData.cards.forEach(item => {\r",
+									"        pm.expect(item).to.have.keys('code','image','images', 'value', 'suit')\r",
+									"    });\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest(`https://deckofcardsapi.com/api/deck/${pm.variables.get('deck_id')}/return/`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{deck_id}}/draw/?count={{deckCount}}",
+							"host": [
+								"{{baseURL}}{{deck_id}}"
+							],
+							"path": [
+								"draw",
+								""
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "{{deckCount}}"
+								},
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DC - Tirar mais cartas do que existem no deck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Michelly Lima\r",
+									"\r",
+									"pm.test(\"Erro ao tirar mais de 52 cartas\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.success).to.equal(false);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Mensagem correta de erro ao tirar mais de 52 cartas\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.error).to.equal(\"Not enough cards remaining to draw 60 additional\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"pm.sendRequest(`https://deckofcardsapi.com/api/deck/${pm.variables.get('deck_id')}/return/`);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}{{deck_id}}/draw/?count=60",
+							"host": [
+								"{{baseURL}}{{deck_id}}"
+							],
+							"path": [
+								"draw",
+								""
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "60"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DC - Tirar 0 cartas do Deck",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Michelly Lima\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Retirar 0 cartas retorna sucesso\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.success).to.equal(true);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Array possui 0 elementos\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    let cartas = jsonData.cards;\r",
+									"    pm.expect(cartas.length).to.equal(0);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Restam 52 cartas - o baralho não foi alterado\", function(){\r",
+									"    let jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.remaining).to.equal(52);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/draw/?count=0",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"draw",
+								""
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"auth": {
+				"type": "noauth"
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
 			"name": "API Tests",
 			"item": [
 				{
