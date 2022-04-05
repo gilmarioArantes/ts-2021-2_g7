@@ -640,6 +640,213 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Partial Deck",
+			"item": [
+				{
+					"name": "PD - Cria Baralho Completo",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Marco Feitosa\r",
+									"\r",
+									"pm.test(\"Status test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Returns json\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Empty Deck\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.remaining).to.equal(52);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PD - Cria Baralho Parcial Vazio",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Marco Feitosa\r",
+									"\r",
+									"pm.test(\"Status test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Returns json\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Empty Deck\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.remaining).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/?cards",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "cards",
+									"value": null
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PD - Cria Baralho Parcial Inválido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Marco Feitosa\r",
+									"\r",
+									"pm.test(\"Status test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Returns json\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Full Deck\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.remaining).to.equal(0);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/?cards=AB,CH,10S,KL",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "cards",
+									"value": "AB,CH,10S,KL"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "PD - Cria Baralho Parcial Válido",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// Feito por Marco Feitosa\r",
+									"\r",
+									"pm.test(\"Status test\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Returns json\", function () {\r",
+									"    pm.response.to.be.withBody;\r",
+									"    pm.response.to.be.json;\r",
+									"});\r",
+									"\r",
+									"pm.test(\"Full Deck\", function () {\r",
+									"    const responseJson = pm.response.json();\r",
+									"    pm.expect(responseJson.remaining).to.equal(4);\r",
+									"    pm.variables.set(\"partial_id\", responseJson.deck_id)  \r",
+									"});\r",
+									"\r",
+									"pm.test(\"Check Cards In Deck\", function () {\r",
+									"    pm.sendRequest(`${pm.collectionVariables.get('baseURL')}/${pm.variables.get('partial_id')}/draw/?count=4`, function (err, response) {\r",
+									"        pm.expect(response.code).to.equal(200);\r",
+									"        const drawJson = response.json();\r",
+									"        pm.expect(drawJson.remaining).to.equal(0);\r",
+									"        for(i=0; i<4; i++){\r",
+									"            pm.expect(drawJson.cards[i].code).to.be.oneOf([\"4C\",\"AS\",\"7D\",\"7H\"]);\r",
+									"        }\r",
+									"    })\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}new/shuffle/?cards=4C,7D,7H,AS",
+							"host": [
+								"{{baseURL}}new"
+							],
+							"path": [
+								"shuffle",
+								""
+							],
+							"query": [
+								{
+									"key": "cards",
+									"value": "4C,7D,7H,AS"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [
