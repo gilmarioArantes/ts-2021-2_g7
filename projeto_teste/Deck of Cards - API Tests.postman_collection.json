@@ -1,1339 +1,1206 @@
 {
-	"info": {
-		"_postman_id": "8c28471d-6584-4690-8dde-361989a4eafd",
-		"name": "Deck of Cards - API Tests",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
-	},
-	"item": [
-		{
-			"name": "Draw a Card",
-			"item": [
-				{
-					"name": "DC - Tirar cartas",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Michelly Lima\r",
-									"\r",
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Carta retirada com sucesso\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.success).to.equal(true);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"O ID do Deck de onde as cartas foram retiradas está correto\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.deck_id).to.equal(pm.collectionVariables.get(\"deck_id\"));\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Contagem correta de cartas\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    let cartas = jsonData.cards;\r",
-									"    pm.expect(cartas.length).to.equal(2);\r",
-									"})\r",
-									"\r",
-									"pm.test(\"Itens do Array de cartas estão presentes\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    jsonData.cards.forEach(item => {\r",
-									"        pm.expect(item).to.have.keys('code','image','images', 'value', 'suit')\r",
-									"    });\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest(`https://deckofcardsapi.com/api/deck/${pm.variables.get('deck_id')}/return/`);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}{{deck_id}}/draw/?count={{deckCount}}",
-							"host": [
-								"{{baseURL}}{{deck_id}}"
-							],
-							"path": [
-								"draw",
-								""
-							],
-							"query": [
-								{
-									"key": "count",
-									"value": "{{deckCount}}"
-								},
-								{
-									"key": "",
-									"value": null,
-									"disabled": true
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DC - Tirar mais cartas do que existem no deck",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Michelly Lima\r",
-									"\r",
-									"pm.test(\"Erro ao tirar mais de 52 cartas\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.success).to.equal(false);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Mensagem correta de erro ao tirar mais de 52 cartas\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.error).to.equal(\"Not enough cards remaining to draw 60 additional\");\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"pm.sendRequest(`https://deckofcardsapi.com/api/deck/${pm.variables.get('deck_id')}/return/`);"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}{{deck_id}}/draw/?count=60",
-							"host": [
-								"{{baseURL}}{{deck_id}}"
-							],
-							"path": [
-								"draw",
-								""
-							],
-							"query": [
-								{
-									"key": "count",
-									"value": "60"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "DC - Tirar 0 cartas do Deck",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Michelly Lima\r",
-									"\r",
-									"pm.test(\"Status code is 200\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Retirar 0 cartas retorna sucesso\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.success).to.equal(true);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Array possui 0 elementos\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    let cartas = jsonData.cards;\r",
-									"    pm.expect(cartas.length).to.equal(0);\r",
-									"})\r",
-									"\r",
-									"pm.test(\"Restam 52 cartas - o baralho não foi alterado\", function(){\r",
-									"    let jsonData = pm.response.json();\r",
-									"    pm.expect(jsonData.remaining).to.equal(52);\r",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/draw/?count=0",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"draw",
-								""
-							],
-							"query": [
-								{
-									"key": "count",
-									"value": "0"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"auth": {
-				"type": "noauth"
-			},
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			]
-		},
-		{
-			"name": "API Tests",
-			"item": [
-				{
-					"name": "API Check Request",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Michelly Lima\r",
-									"\r",
-									"pm.test(\"Status code is 200\", function(){\r",
-									"    pm.response.to.have.status(200);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "https://deckofcardsapi.com/",
-							"protocol": "https",
-							"host": [
-								"deckofcardsapi",
-								"com"
-							],
-							"path": [
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Deck id does not exist",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Fernando Severino",
-									"",
-									"pm.test(\"Not found status test.\", function(){",
-									"    pm.expect(pm.response.code).to.eql(404);",
-									"});",
-									"",
-									"pm.test(\"Returns json.\", function(){",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"",
-									"pm.test(\"Response Body test.\", function(){",
-									"    const responseJson = pm.response.json();",
-									"",
-									"    pm.expect(responseJson.success).to.eql(false);",
-									"    pm.expect(responseJson.error).to.eql('Deck ID does not exist.');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}non_existent_ID/return",
-							"host": [
-								"{{baseURL}}non_existent_ID"
-							],
-							"path": [
-								"return"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Pile name does not exist",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Fernando Severino",
-									"",
-									"pm.test(\"Not found status test.\", function(){",
-									"    pm.expect(pm.response.code).to.eql(404);",
-									"});",
-									"",
-									"pm.test(\"Returns json.\", function(){",
-									"    pm.response.to.be.withBody;",
-									"    pm.response.to.be.json;",
-									"});",
-									"",
-									"pm.test(\"Response Body test.\", function(){",
-									"    const responseJson = pm.response.json();",
-									"",
-									"    pm.expect(responseJson.success).to.eql(false);",
-									"    pm.expect(responseJson.error).to.eql('The pile, pile_name does not exist.');",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}{{deck_id}}/pile/pile_name/return/",
-							"host": [
-								"{{baseURL}}{{deck_id}}"
-							],
-							"path": [
-								"pile",
-								"pile_name",
-								"return",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Shuffle the Cards",
-			"item": [
-				{
-					"name": "SC - Criar e Embalhar Deck",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//Feito por Ariel Marte",
-									"",
-									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Sucesso\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.success).to.equal(true);",
-									"})",
-									"",
-									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Embaralhamento\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.shuffled).to.equal(true);",
-									"})",
-									"",
-									"pm.test(\"Criar um Deck e Embaralhar - Total de Cartas\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.remaining).to.equal(pm.collectionVariables.get(\"deckCount\")*52);",
-									"",
-									"})",
-									"",
-									"",
-									"",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/?deck_count={{deckCount}}",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "deck_count",
-									"value": "{{deckCount}}"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "SC - Deck Maior 20 baralhos",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//Feito por Ariel Marte",
-									"",
-									"pm.test(\"Criar um Deck maior que 20\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.success).to.equal(false);",
-									"})",
-									"",
-									"pm.test(\"Mensagem de Erro\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.error).to.equal(\"The max number of Decks is 20.\");",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/?deck_count=21",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "deck_count",
-									"value": "21"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "SC - Deck Zerado",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//Feito por Ariel Marte",
-									"",
-									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Sucesso\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.success).to.equal(true);",
-									"})",
-									"",
-									"pm.test(\"Criar um Deck e Embaralhar - Confirmação de Embaralhamento\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.shuffled).to.equal(true);",
-									"})",
-									"",
-									"",
-									"pm.test(\"Criar um Deck Zero\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.remaining).to.equal(0);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/?deck_count=0",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "deck_count",
-									"value": "0"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Reshuffle the Cards",
-			"item": [
-				{
-					"name": "RC - Reembaralhar Todas as cartas",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//Feito por Ariel Marte",
-									"",
-									"pm.test(\"Reembaralhar - Confirmação de Sucesso\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.success).to.equal(true);",
-									"})",
-									"",
-									"pm.test(\"Reembaralhar - Confirmação de Reembaralhar\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.shuffled).to.equal(true);",
-									"})",
-									"",
-									"",
-									"pm.test(\"Totas as Cartas de Volta ao Deck\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.remaining).to.equal(52);",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}{{deck_id}}/shuffle/",
-							"host": [
-								"{{baseURL}}{{deck_id}}"
-							],
-							"path": [
-								"shuffle",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "RC - Reembaralhar Restantes",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"//Feito por Ariel Marte",
-									"",
-									"pm.test(\"Reembaralhar Restantes - Confirmação de Sucesso\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.success).to.equal(true);",
-									"})",
-									"",
-									"pm.test(\"Reembaralhar Restantes - Confirmação de Reembaralhar\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.shuffled).to.equal(true);",
-									"})",
-									"",
-									"",
-									"pm.test(\"Reembaralhar Cartas Restantes no Deck - Necessário RC Transição\", function(){",
-									"    let jsonData = pm.response.json();",
-									"    pm.expect(jsonData.remaining).to.equal(pm.collectionVariables.get(\"remaining\"));",
-									"",
-									"})",
-									""
-								],
-								"type": "text/javascript"
-							}
-						},
-						{
-							"listen": "prerequest",
-							"script": {
-								"exec": [
-									"//Feito por Ariel Marte",
-									"",
-									"pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/return`, function (err, response) {",
-									"    let jsonData = response.json();",
-									"    pm.collectionVariables.set(\"remaining\", jsonData.remaining);",
-									"    });"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}{{deck_id}}/shuffle/?remaining=true",
-							"host": [
-								"{{baseURL}}{{deck_id}}"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "remaining",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Partial Deck",
-			"item": [
-				{
-					"name": "PD - Cria Baralho Completo",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Marco Feitosa\r",
-									"\r",
-									"pm.test(\"Status test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Returns json\", function () {\r",
-									"    pm.response.to.be.withBody;\r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Empty Deck\", function () {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    pm.expect(responseJson.remaining).to.equal(52);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PD - Cria Baralho Parcial Vazio",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Marco Feitosa\r",
-									"\r",
-									"pm.test(\"Status test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Returns json\", function () {\r",
-									"    pm.response.to.be.withBody;\r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Empty Deck\", function () {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    pm.expect(responseJson.remaining).to.equal(0);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/?cards",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "cards",
-									"value": null
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PD - Cria Baralho Parcial Inválido",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Marco Feitosa\r",
-									"\r",
-									"pm.test(\"Status test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Returns json\", function () {\r",
-									"    pm.response.to.be.withBody;\r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Full Deck\", function () {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    pm.expect(responseJson.remaining).to.equal(0);\r",
-									"});"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/?cards=AB,CH,10S,KL",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "cards",
-									"value": "AB,CH,10S,KL"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "PD - Cria Baralho Parcial Válido",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"exec": [
-									"// Feito por Marco Feitosa\r",
-									"\r",
-									"pm.test(\"Status test\", function () {\r",
-									"    pm.response.to.have.status(200);\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Returns json\", function () {\r",
-									"    pm.response.to.be.withBody;\r",
-									"    pm.response.to.be.json;\r",
-									"});\r",
-									"\r",
-									"pm.test(\"Full Deck\", function () {\r",
-									"    const responseJson = pm.response.json();\r",
-									"    pm.expect(responseJson.remaining).to.equal(4);\r",
-									"    pm.variables.set(\"partial_id\", responseJson.deck_id)  \r",
-									"});\r",
-									"\r",
-									"pm.test(\"Check Cards In Deck\", function () {\r",
-									"    pm.sendRequest(`${pm.collectionVariables.get('baseURL')}/${pm.variables.get('partial_id')}/draw/?count=4`, function (err, response) {\r",
-									"        pm.expect(response.code).to.equal(200);\r",
-									"        const drawJson = response.json();\r",
-									"        pm.expect(drawJson.remaining).to.equal(0);\r",
-									"        for(i=0; i<4; i++){\r",
-									"            pm.expect(drawJson.cards[i].code).to.be.oneOf([\"4C\",\"AS\",\"7D\",\"7H\"]);\r",
-									"        }\r",
-									"    })\r",
-									"})"
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}new/shuffle/?cards=4C,7D,7H,AS",
-							"host": [
-								"{{baseURL}}new"
-							],
-							"path": [
-								"shuffle",
-								""
-							],
-							"query": [
-								{
-									"key": "cards",
-									"value": "4C,7D,7H,AS"
-								}
-							]
-						}
-					},
-					"response": []
-				}
-			]
-		},
-		{
-			"name": "Returning Cards to the Deck",
-			"item": [
-				{
-					"name": "Unit Request",
-					"item": [
-						{
-							"name": "RCD - Deck id does not exist",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Not found status test.\", function(){",
-											"    pm.expect(pm.response.code).to.eql(404);",
-											"});",
-											"",
-											"pm.test(\"Returns json.\", function(){",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"pm.test(\"Response Body test.\", function(){",
-											"    const responseJson = pm.response.json();",
-											"",
-											"    pm.expect(responseJson.success).to.eql(false);",
-											"    pm.expect(responseJson.error).to.eql('Deck ID does not exist.');",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}non_existent_ID/return",
-									"host": [
-										"{{baseURL}}non_existent_ID"
-									],
-									"path": [
-										"return"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "RCD - Returning drawn cards",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Checking status code 200\", function(){",
-											"    pm.expect(pm.response.code).to.eql(200);",
-											"});",
-											"",
-											"pm.test(\"Returns json.\", function(){",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"pm.test(\"Response Body test.\", function(){",
-											"    const responseJson = pm.response.json();",
-											"",
-											"    pm.expect(responseJson.success).to.eql(true);",
-											"    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
-											"    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}{{deck_id}}/return",
-									"host": [
-										"{{baseURL}}{{deck_id}}"
-									],
-									"path": [
-										"return"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "RCD - Pile name does not exist",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Not found status test.\", function(){",
-											"    pm.expect(pm.response.code).to.eql(404);",
-											"});",
-											"",
-											"pm.test(\"Returns json.\", function(){",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"pm.test(\"Response Body test.\", function(){",
-											"    const responseJson = pm.response.json();",
-											"",
-											"    pm.expect(responseJson.success).to.eql(false);",
-											"    pm.expect(responseJson.error).to.eql('The pile, pile_name does not exist.');",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}{{deck_id}}/pile/pile_name/return/",
-									"host": [
-										"{{baseURL}}{{deck_id}}"
-									],
-									"path": [
-										"pile",
-										"pile_name",
-										"return",
-										""
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "RCD - Returning from pile to deck",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											" ",
-											"pm.test(\"Checking status code 200\", function(){",
-											"    pm.expect(pm.response.code).to.eql(200);",
-											"});",
-											"",
-											"pm.test(\"Returns json.\", function(){",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"pm.test(\"Response Body test.\", function(){",
-											"    const responseJson = pm.response.json();",
-											"",
-											"    pm.expect(responseJson.success).to.eql(true);",
-											"    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
-											"    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/pile/${pm.variables.get('pile_name')}/add/?cards=8C,3D`);\r",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}{{deck_id}}/pile/{{pile_name}}/return",
-									"host": [
-										"{{baseURL}}{{deck_id}}"
-									],
-									"path": [
-										"pile",
-										"{{pile_name}}",
-										"return"
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "RCD - Returning specific drawn cards",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Checking status code 200\", function(){",
-											"    pm.expect(pm.response.code).to.eql(200);",
-											"});",
-											"",
-											"pm.test(\"Returns json.\", function(){",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"pm.test(\"Response Body test.\", function(){",
-											"    const responseJson = pm.response.json();",
-											"",
-											"    pm.expect(responseJson.success).to.eql(true);",
-											"    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
-											"    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/pile/${pm.variables.get('pile_name')}/add/?cards=8C,3D`);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}{{deck_id}}/return/?cards=8C,3D",
-									"host": [
-										"{{baseURL}}{{deck_id}}"
-									],
-									"path": [
-										"return",
-										""
-									],
-									"query": [
-										{
-											"key": "cards",
-											"value": "8C,3D"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "RCD - Returning specific cards from pile to deck",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Checking status code 200\", function(){",
-											"    pm.expect(pm.response.code).to.eql(200);",
-											"});",
-											"",
-											"pm.test(\"Returns json.\", function(){",
-											"    pm.response.to.be.withBody;",
-											"    pm.response.to.be.json;",
-											"});",
-											"",
-											"pm.test(\"Response Body test.\", function(){",
-											"    const responseJson = pm.response.json();",
-											"",
-											"    pm.expect(responseJson.success).to.eql(true);",
-											"    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
-											"    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								},
-								{
-									"listen": "prerequest",
-									"script": {
-										"exec": [
-											"pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/pile/${pm.variables.get('pile_name')}/add/?cards=8C,3D`);"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}{{deck_id}}/pile/{{pile_name}}/return/?cards=8C,3D",
-									"host": [
-										"{{baseURL}}{{deck_id}}"
-									],
-									"path": [
-										"pile",
-										"{{pile_name}}",
-										"return",
-										""
-									],
-									"query": [
-										{
-											"key": "cards",
-											"value": "8C,3D"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				},
-				{
-					"name": "Integration Requests",
-					"item": [
-						{
-							"name": "RCD - Returning drawn cards",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Returning drawn cards\", function(){",
-											"    const responseJson = pm.response.json();",
-											"    const deckID = responseJson.deck_id;",
-											"",
-											"    pm.expect(pm.response.code).to.eql(200);",
-											"",
-											"    pm.sendRequest(`${pm.variables.get('baseURL')}${deckID}/return`, function (err, response) {",
-											"        const responseJson = response.json();",
-											"",
-											"        pm.expect(response.code).to.eql(200);",
-											"",
-											"        pm.expect(responseJson.success).to.eql(true);",
-											"        pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
-											"        pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
-											"    });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}new/shuffle/?deck_count=1",
-									"host": [
-										"{{baseURL}}new"
-									],
-									"path": [
-										"shuffle",
-										""
-									],
-									"query": [
-										{
-											"key": "deck_count",
-											"value": "1"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "RCD - Returning from pile to deck",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"// Feito por Fernando Severino",
-											"",
-											"pm.test(\"Returning from pile to deck\", function(){",
-											"    const baseURL = pm.variables.get('baseURL');",
-											"    const deckID = pm.variables.get('deck_id');",
-											"    const pileName = pm.variables.get('pile_name');",
-											"",
-											"    pm.expect(pm.response.code).to.eql(200);",
-											"    ",
-											"    pm.sendRequest(`${baseURL}${deckID}/pile/${pileName}/return/`, function (err, response) {",
-											"        const responseJson = response.json();",
-											"",
-											"        pm.expect(response.code).to.eql(200);",
-											"",
-											"        pm.expect(responseJson.success).to.eql(true);",
-											"        pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
-											"        pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
-											"    });",
-											"});"
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"method": "GET",
-								"header": [],
-								"url": {
-									"raw": "{{baseURL}}{{deck_id}}/pile/{{pile_name}}/add/?cards=AS,2S",
-									"host": [
-										"{{baseURL}}{{deck_id}}"
-									],
-									"path": [
-										"pile",
-										"{{pile_name}}",
-										"add",
-										""
-									],
-									"query": [
-										{
-											"key": "cards",
-											"value": "AS,2S"
-										}
-									]
-								}
-							},
-							"response": []
-						}
-					]
-				}
-			]
-		}
-	],
-	"event": [
-		{
-			"listen": "prerequest",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		},
-		{
-			"listen": "test",
-			"script": {
-				"type": "text/javascript",
-				"exec": [
-					""
-				]
-			}
-		}
-	],
-	"variable": [
-		{
-			"key": "deck_id",
-			"value": "c3xlqlnbgpkq"
-		},
-		{
-			"key": "baseURL",
-			"value": "https://deckofcardsapi.com/api/deck/"
-		},
-		{
-			"key": "deckCount",
-			"value": "2"
-		},
-		{
-			"key": "variable_key",
-			"value": ""
-		},
-		{
-			"key": "remaining",
-			"value": ""
-		},
-		{
-			"key": "pile_name",
-			"value": "playerOne",
-			"type": "string"
-		}
-	]
+  "info": {
+    "_postman_id": "8c28471d-6584-4690-8dde-361989a4eafd",
+    "name": "Deck of Cards - API Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Draw a Card",
+      "item": [
+        {
+          "name": "DC - Tirar cartas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Michelly Lima\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Carta retirada com sucesso\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"O ID do Deck de onde as cartas foram retiradas está correto\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.deck_id).to.equal(pm.collectionVariables.get(\"deck_id\"));\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Contagem correta de cartas\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    let cartas = jsonData.cards;\r",
+                  "    pm.expect(cartas.length).to.equal(2);\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Itens do Array de cartas estão presentes\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    jsonData.cards.forEach(item => {\r",
+                  "        pm.expect(item).to.have.keys('code','image','images', 'value', 'suit')\r",
+                  "    });\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.sendRequest(`https://deckofcardsapi.com/api/deck/${pm.variables.get('deck_id')}/return/`);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}{{deck_id}}/draw/?count={{deckCount}}",
+              "host": ["{{baseURL}}{{deck_id}}"],
+              "path": ["draw", ""],
+              "query": [
+                {
+                  "key": "count",
+                  "value": "{{deckCount}}"
+                },
+                {
+                  "key": "",
+                  "value": null,
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DC - Tirar mais cartas do que existem no deck",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Michelly Lima\r",
+                  "\r",
+                  "pm.test(\"Erro ao tirar mais de 52 cartas\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.equal(false);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Mensagem correta de erro ao tirar mais de 52 cartas\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.error).to.equal(\"Not enough cards remaining to draw 60 additional\");\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "pm.sendRequest(`https://deckofcardsapi.com/api/deck/${pm.variables.get('deck_id')}/return/`);"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}{{deck_id}}/draw/?count=60",
+              "host": ["{{baseURL}}{{deck_id}}"],
+              "path": ["draw", ""],
+              "query": [
+                {
+                  "key": "count",
+                  "value": "60"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "DC - Tirar 0 cartas do Deck",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Michelly Lima\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Retirar 0 cartas retorna sucesso\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.success).to.equal(true);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Array possui 0 elementos\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    let cartas = jsonData.cards;\r",
+                  "    pm.expect(cartas.length).to.equal(0);\r",
+                  "})\r",
+                  "\r",
+                  "pm.test(\"Restam 52 cartas - o baralho não foi alterado\", function(){\r",
+                  "    let jsonData = pm.response.json();\r",
+                  "    pm.expect(jsonData.remaining).to.equal(52);\r",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/draw/?count=0",
+              "host": ["{{baseURL}}new"],
+              "path": ["draw", ""],
+              "query": [
+                {
+                  "key": "count",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "auth": {
+        "type": "noauth"
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [""]
+          }
+        }
+      ]
+    },
+    {
+      "name": "API Tests",
+      "item": [
+        {
+          "name": "API Check Request",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Michelly Lima\r",
+                  "\r",
+                  "pm.test(\"Status code is 200\", function(){\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "https://deckofcardsapi.com/",
+              "protocol": "https",
+              "host": ["deckofcardsapi", "com"],
+              "path": [""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deck id does not exist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Fernando Severino",
+                  "",
+                  "pm.test(\"Not found status test.\", function(){",
+                  "    pm.expect(pm.response.code).to.eql(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Returns json.\", function(){",
+                  "    pm.response.to.be.withBody;",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Response Body test.\", function(){",
+                  "    const responseJson = pm.response.json();",
+                  "",
+                  "    pm.expect(responseJson.success).to.eql(false);",
+                  "    pm.expect(responseJson.error).to.eql('Deck ID does not exist.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}non_existent_ID/return",
+              "host": ["{{baseURL}}non_existent_ID"],
+              "path": ["return"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pile name does not exist",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Fernando Severino",
+                  "",
+                  "pm.test(\"Not found status test.\", function(){",
+                  "    pm.expect(pm.response.code).to.eql(404);",
+                  "});",
+                  "",
+                  "pm.test(\"Returns json.\", function(){",
+                  "    pm.response.to.be.withBody;",
+                  "    pm.response.to.be.json;",
+                  "});",
+                  "",
+                  "pm.test(\"Response Body test.\", function(){",
+                  "    const responseJson = pm.response.json();",
+                  "",
+                  "    pm.expect(responseJson.success).to.eql(false);",
+                  "    pm.expect(responseJson.error).to.eql('The pile, pile_name does not exist.');",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}{{deck_id}}/pile/pile_name/return/",
+              "host": ["{{baseURL}}{{deck_id}}"],
+              "path": ["pile", "pile_name", "return", ""]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Shuffle the Cards",
+      "item": [
+        {
+          "name": "SC - Criar e Embalhar Deck",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "//Feito por Ariel Marte",
+                  "",
+                  "pm.test(\"Criar um Deck e Embaralhar - Confirmação de Sucesso\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "})",
+                  "",
+                  "pm.test(\"Criar um Deck e Embaralhar - Confirmação de Embaralhamento\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shuffled).to.equal(true);",
+                  "})",
+                  "",
+                  "pm.test(\"Criar um Deck e Embaralhar - Total de Cartas\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.remaining).to.equal(pm.collectionVariables.get(\"deckCount\")*52);",
+                  "",
+                  "})",
+                  "",
+                  "",
+                  "",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [""],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/?deck_count={{deckCount}}",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "deck_count",
+                  "value": "{{deckCount}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SC - Deck Maior 20 baralhos",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "//Feito por Ariel Marte",
+                  "",
+                  "pm.test(\"Criar um Deck maior que 20\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(false);",
+                  "})",
+                  "",
+                  "pm.test(\"Mensagem de Erro\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.error).to.equal(\"The max number of Decks is 20.\");",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/?deck_count=21",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "deck_count",
+                  "value": "21"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "SC - Deck Zerado",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "//Feito por Ariel Marte",
+                  "",
+                  "pm.test(\"Criar um Deck e Embaralhar - Confirmação de Sucesso\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "})",
+                  "",
+                  "pm.test(\"Criar um Deck e Embaralhar - Confirmação de Embaralhamento\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shuffled).to.equal(true);",
+                  "})",
+                  "",
+                  "",
+                  "pm.test(\"Criar um Deck Zero\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.remaining).to.equal(0);",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/?deck_count=0",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "deck_count",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Reshuffle the Cards",
+      "item": [
+        {
+          "name": "RC - Reembaralhar Todas as cartas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "//Feito por Ariel Marte",
+                  "",
+                  "pm.test(\"Reembaralhar - Confirmação de Sucesso\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "})",
+                  "",
+                  "pm.test(\"Reembaralhar - Confirmação de Reembaralhar\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shuffled).to.equal(true);",
+                  "})",
+                  "",
+                  "",
+                  "pm.test(\"Totas as Cartas de Volta ao Deck\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.remaining).to.equal(52);",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}{{deck_id}}/shuffle/",
+              "host": ["{{baseURL}}{{deck_id}}"],
+              "path": ["shuffle", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "RC - Reembaralhar Restantes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "//Feito por Ariel Marte",
+                  "",
+                  "pm.test(\"Reembaralhar Restantes - Confirmação de Sucesso\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.success).to.equal(true);",
+                  "})",
+                  "",
+                  "pm.test(\"Reembaralhar Restantes - Confirmação de Reembaralhar\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.shuffled).to.equal(true);",
+                  "})",
+                  "",
+                  "",
+                  "pm.test(\"Reembaralhar Cartas Restantes no Deck - Necessário RC Transição\", function(){",
+                  "    let jsonData = pm.response.json();",
+                  "    pm.expect(jsonData.remaining).to.equal(pm.collectionVariables.get(\"remaining\"));",
+                  "",
+                  "})",
+                  ""
+                ],
+                "type": "text/javascript"
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "//Feito por Ariel Marte",
+                  "",
+                  "pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/return`, function (err, response) {",
+                  "    let jsonData = response.json();",
+                  "    pm.collectionVariables.set(\"remaining\", jsonData.remaining);",
+                  "    });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}{{deck_id}}/shuffle/?remaining=true",
+              "host": ["{{baseURL}}{{deck_id}}"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "remaining",
+                  "value": "true"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Partial Deck",
+      "item": [
+        {
+          "name": "PD - Cria Baralho Completo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Marco Feitosa\r",
+                  "\r",
+                  "pm.test(\"Status test\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returns json\", function () {\r",
+                  "    pm.response.to.be.withBody;\r",
+                  "    pm.response.to.be.json;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Empty Deck\", function () {\r",
+                  "    const responseJson = pm.response.json();\r",
+                  "    pm.expect(responseJson.remaining).to.equal(52);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PD - Cria Baralho Parcial Vazio",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Marco Feitosa\r",
+                  "\r",
+                  "pm.test(\"Status test\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returns json\", function () {\r",
+                  "    pm.response.to.be.withBody;\r",
+                  "    pm.response.to.be.json;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Empty Deck\", function () {\r",
+                  "    const responseJson = pm.response.json();\r",
+                  "    pm.expect(responseJson.remaining).to.equal(0);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/?cards",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "cards",
+                  "value": null
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PD - Cria Baralho Parcial Inválido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Marco Feitosa\r",
+                  "\r",
+                  "pm.test(\"Status test\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returns json\", function () {\r",
+                  "    pm.response.to.be.withBody;\r",
+                  "    pm.response.to.be.json;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Full Deck\", function () {\r",
+                  "    const responseJson = pm.response.json();\r",
+                  "    pm.expect(responseJson.remaining).to.equal(0);\r",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/?cards=AB,CH,10S,KL",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "cards",
+                  "value": "AB,CH,10S,KL"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "PD - Cria Baralho Parcial Válido",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Feito por Marco Feitosa\r",
+                  "\r",
+                  "pm.test(\"Status test\", function () {\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Returns json\", function () {\r",
+                  "    pm.response.to.be.withBody;\r",
+                  "    pm.response.to.be.json;\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Full Deck\", function () {\r",
+                  "    const responseJson = pm.response.json();\r",
+                  "    pm.expect(responseJson.remaining).to.equal(4);\r",
+                  "    pm.variables.set(\"partial_id\", responseJson.deck_id)  \r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Check Cards In Deck\", function () {\r",
+                  "    pm.sendRequest(`${pm.collectionVariables.get('baseURL')}/${pm.variables.get('partial_id')}/draw/?count=4`, function (err, response) {\r",
+                  "        pm.expect(response.code).to.equal(200);\r",
+                  "        const drawJson = response.json();\r",
+                  "        pm.expect(drawJson.remaining).to.equal(0);\r",
+                  "        for(i=0; i<4; i++){\r",
+                  "            pm.expect(drawJson.cards[i].code).to.be.oneOf([\"4C\",\"AS\",\"7D\",\"7H\"]);\r",
+                  "        }\r",
+                  "    })\r",
+                  "})"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseURL}}new/shuffle/?cards=4C,7D,7H,AS",
+              "host": ["{{baseURL}}new"],
+              "path": ["shuffle", ""],
+              "query": [
+                {
+                  "key": "cards",
+                  "value": "4C,7D,7H,AS"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Returning Cards to the Deck",
+      "item": [
+        {
+          "name": "Unit Request",
+          "item": [
+            {
+              "name": "RCD - Deck id does not exist",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Not found status test.\", function(){",
+                      "    pm.expect(pm.response.code).to.eql(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns json.\", function(){",
+                      "    pm.response.to.be.withBody;",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response Body test.\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "",
+                      "    pm.expect(responseJson.success).to.eql(false);",
+                      "    pm.expect(responseJson.error).to.eql('Deck ID does not exist.');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}non_existent_ID/return",
+                  "host": ["{{baseURL}}non_existent_ID"],
+                  "path": ["return"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "RCD - Returning drawn cards",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Checking status code 200\", function(){",
+                      "    pm.expect(pm.response.code).to.eql(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns json.\", function(){",
+                      "    pm.response.to.be.withBody;",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response Body test.\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "",
+                      "    pm.expect(responseJson.success).to.eql(true);",
+                      "    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
+                      "    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}{{deck_id}}/return",
+                  "host": ["{{baseURL}}{{deck_id}}"],
+                  "path": ["return"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "RCD - Pile name does not exist",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Not found status test.\", function(){",
+                      "    pm.expect(pm.response.code).to.eql(404);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns json.\", function(){",
+                      "    pm.response.to.be.withBody;",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response Body test.\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "",
+                      "    pm.expect(responseJson.success).to.eql(false);",
+                      "    pm.expect(responseJson.error).to.eql('The pile, pile_name does not exist.');",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}{{deck_id}}/pile/pile_name/return/",
+                  "host": ["{{baseURL}}{{deck_id}}"],
+                  "path": ["pile", "pile_name", "return", ""]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "RCD - Returning from pile to deck",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      " ",
+                      "pm.test(\"Checking status code 200\", function(){",
+                      "    pm.expect(pm.response.code).to.eql(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns json.\", function(){",
+                      "    pm.response.to.be.withBody;",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response Body test.\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "",
+                      "    pm.expect(responseJson.success).to.eql(true);",
+                      "    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
+                      "    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/pile/${pm.variables.get('pile_name')}/add/?cards=8C,3D`);\r",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}{{deck_id}}/pile/{{pile_name}}/return",
+                  "host": ["{{baseURL}}{{deck_id}}"],
+                  "path": ["pile", "{{pile_name}}", "return"]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "RCD - Returning specific drawn cards",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Checking status code 200\", function(){",
+                      "    pm.expect(pm.response.code).to.eql(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns json.\", function(){",
+                      "    pm.response.to.be.withBody;",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response Body test.\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "",
+                      "    pm.expect(responseJson.success).to.eql(true);",
+                      "    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
+                      "    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/pile/${pm.variables.get('pile_name')}/add/?cards=8C,3D`);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}{{deck_id}}/return/?cards=8C,3D",
+                  "host": ["{{baseURL}}{{deck_id}}"],
+                  "path": ["return", ""],
+                  "query": [
+                    {
+                      "key": "cards",
+                      "value": "8C,3D"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "RCD - Returning specific cards from pile to deck",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Checking status code 200\", function(){",
+                      "    pm.expect(pm.response.code).to.eql(200);",
+                      "});",
+                      "",
+                      "pm.test(\"Returns json.\", function(){",
+                      "    pm.response.to.be.withBody;",
+                      "    pm.response.to.be.json;",
+                      "});",
+                      "",
+                      "pm.test(\"Response Body test.\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "",
+                      "    pm.expect(responseJson.success).to.eql(true);",
+                      "    pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
+                      "    pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [
+                      "pm.sendRequest(`${pm.variables.get('baseURL')}${pm.variables.get('deck_id')}/pile/${pm.variables.get('pile_name')}/add/?cards=8C,3D`);"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}{{deck_id}}/pile/{{pile_name}}/return/?cards=8C,3D",
+                  "host": ["{{baseURL}}{{deck_id}}"],
+                  "path": ["pile", "{{pile_name}}", "return", ""],
+                  "query": [
+                    {
+                      "key": "cards",
+                      "value": "8C,3D"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Integration Requests",
+          "item": [
+            {
+              "name": "RCD - Returning drawn cards",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Returning drawn cards\", function(){",
+                      "    const responseJson = pm.response.json();",
+                      "    const deckID = responseJson.deck_id;",
+                      "",
+                      "    pm.expect(pm.response.code).to.eql(200);",
+                      "",
+                      "    pm.sendRequest(`${pm.variables.get('baseURL')}${deckID}/return`, function (err, response) {",
+                      "        const responseJson = response.json();",
+                      "",
+                      "        pm.expect(response.code).to.eql(200);",
+                      "",
+                      "        pm.expect(responseJson.success).to.eql(true);",
+                      "        pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
+                      "        pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
+                      "    });",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}new/shuffle/?deck_count=1",
+                  "host": ["{{baseURL}}new"],
+                  "path": ["shuffle", ""],
+                  "query": [
+                    {
+                      "key": "deck_count",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "RCD - Returning from pile to deck",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Feito por Fernando Severino",
+                      "",
+                      "pm.test(\"Returning from pile to deck\", function(){",
+                      "    const baseURL = pm.variables.get('baseURL');",
+                      "    const deckID = pm.variables.get('deck_id');",
+                      "    const pileName = pm.variables.get('pile_name');",
+                      "",
+                      "    pm.expect(pm.response.code).to.eql(200);",
+                      "    ",
+                      "    pm.sendRequest(`${baseURL}${deckID}/pile/${pileName}/return/`, function (err, response) {",
+                      "        const responseJson = response.json();",
+                      "",
+                      "        pm.expect(response.code).to.eql(200);",
+                      "",
+                      "        pm.expect(responseJson.success).to.eql(true);",
+                      "        pm.expect(typeof responseJson.deck_id).to.eql(\"string\");",
+                      "        pm.expect(typeof responseJson.remaining).to.eql(\"number\");",
+                      "    });",
+                      "});"
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseURL}}{{deck_id}}/pile/{{pile_name}}/add/?cards=AS,2S",
+                  "host": ["{{baseURL}}{{deck_id}}"],
+                  "path": ["pile", "{{pile_name}}", "add", ""],
+                  "query": [
+                    {
+                      "key": "cards",
+                      "value": "AS,2S"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "deck_id",
+      "value": "c3xlqlnbgpkq"
+    },
+    {
+      "key": "baseURL",
+      "value": "https://deckofcardsapi.com/api/deck/"
+    },
+    {
+      "key": "deckCount",
+      "value": "2"
+    },
+    {
+      "key": "variable_key",
+      "value": ""
+    },
+    {
+      "key": "remaining",
+      "value": ""
+    },
+    {
+      "key": "pile_name",
+      "value": "playerOne",
+      "type": "string"
+    }
+  ]
 }
