@@ -1,4 +1,4 @@
-name: Python Package using Conda
+name: Test Workflow using Newman
 
 on: [push]
 
@@ -10,6 +10,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Run the API
+      - name: Run the Tests
         run: |
           newman run "projeto_teste/Deck of Cards - API Tests.postman_collection.json"
