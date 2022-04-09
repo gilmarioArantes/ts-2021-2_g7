@@ -1,5 +1,6 @@
 ### Projeto de Teste - Definições - Grupo 7
 
+
 Este arquivo objetiva as definições preliminares a respeito do trabalho final, desenvolvido na modalidade de um projeto de teste automatizado.
 
 **1. Software que será testado.Descrição geral do software para o qual será implementado o projeto de teste automatizado.**
