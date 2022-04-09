@@ -18,7 +18,7 @@ Repositório: https://github.com/crobertsbmw/deckofcards
 |5|Devolvendo as cartas ao baralho|Realiza a devolução de cartas que foram compradas ou de uma pilha de volta ao baralho.|
 
 **3. Tecnologia que será empregada na elaboração do projeto de teste.**
-Insomnia, disponível em: https://insomnia.rest/download
+Postman, disponível em: https://www.postman.com/downloads/
 
 **4. Cronograma de atividades com suas respectivas datas e responsáveis pela execução**
 |#|Funcionalidade|Data_Início|Data_Fim|Responsável|
